@@ -4,9 +4,9 @@ use anchor_lang::prelude::*;
 use anyhow::Result;
 use invariant_types::structs::{Pool, Tick, Tickmap};
 use invariant_types::ID;
-use jupiter::jupiter_override::{Swap, SwapLeg};
+use jupiter::jupiter_override::Swap;
 use jupiter_core::amm::{
-    Amm, KeyedAccount, Quote, QuoteParams, SwapLegAndAccountMetas, SwapParams,
+    Amm, KeyedAccount, PartialAccount, Quote, QuoteParams, SwapAndAccountMetas, SwapParams,
 };
 
 use accounts::{InvariantSwapAccounts, InvariantSwapParams};
@@ -44,6 +44,17 @@ impl JupiterInvariant {
 }
 
 impl Amm for JupiterInvariant {
+    fn program_id(&self) -> Pubkey {
+        self.program_id
+    }
+
+    fn from_keyed_account(keyed_account: &KeyedAccount) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        JupiterInvariant::new_from_keyed_account(keyed_account)
+    }
+
     fn label(&self) -> String {
         self.label.clone()
     }
@@ -62,22 +73,22 @@ impl Amm for JupiterInvariant {
         ticks_addresses
     }
 
-    fn update(&mut self, accounts_map: &HashMap<Pubkey, Vec<u8>>) -> anyhow::Result<()> {
-        let market_account_data: &[u8] = accounts_map
+    fn update(&mut self, accounts_map: &HashMap<Pubkey, PartialAccount>) -> anyhow::Result<()> {
+        let market_account = accounts_map
             .get(&self.market_key)
             .ok_or_else(|| anyhow::anyhow!("Market account data not found"))?;
-        let tickmap_account_data: &[u8] = accounts_map
+        let tickmap_account = accounts_map
             .get(&self.pool.tickmap)
             .ok_or_else(|| anyhow::anyhow!("Tickmap account data not found"))?;
 
-        let pool = Self::deserialize::<Pool>(market_account_data)?;
-        let tickmap = Self::deserialize::<Tickmap>(tickmap_account_data)?;
+        let pool = Self::deserialize::<Pool>(&market_account.data)?;
+        let tickmap = Self::deserialize::<Tickmap>(&tickmap_account.data)?;
 
         let ticks = accounts_map
             .iter()
             .filter(|(key, _)| !self.market_key.eq(key) && !self.pool.tickmap.eq(key))
-            .map(|(key, data)| {
-                let tick = Self::deserialize::<Tick>(data)?;
+            .map(|(key, account)| {
+                let tick = Self::deserialize::<Tick>(&account.data)?;
                 Ok((*key, tick))
             })
             .collect::<Result<Ticks>>()?;
@@ -100,20 +111,14 @@ impl Amm for JupiterInvariant {
                     in_amount,
                     out_amount,
                     fee_amount,
-                    starting_sqrt_price,
-                    ending_sqrt_price,
                     ..
                 } = result;
-                let price_impact_pct =
-                    Self::calculate_price_impact(starting_sqrt_price, ending_sqrt_price)
-                        .unwrap_or_else(|_| rust_decimal::Decimal::default());
 
                 let quote = Quote {
                     in_amount,
                     out_amount,
                     fee_amount,
                     not_enough_liquidity,
-                    price_impact_pct,
                     ..Quote::default()
                 };
                 Ok(quote)
@@ -131,7 +136,7 @@ impl Amm for JupiterInvariant {
     fn get_swap_leg_and_account_metas(
         &self,
         swap_params: &SwapParams,
-    ) -> anyhow::Result<SwapLegAndAccountMetas> {
+    ) -> anyhow::Result<SwapAndAccountMetas> {
         let SwapParams {
             in_amount,
             destination_mint,
@@ -179,10 +184,8 @@ impl Amm for JupiterInvariant {
             InvariantSwapAccounts::from_pubkeys(&self, &invariant_swap_params)?;
         let account_metas = invariant_swap_accounts.to_account_metas();
 
-        Ok(SwapLegAndAccountMetas {
-            swap_leg: SwapLeg::Swap {
-                swap: Swap::Invariant { x_to_y },
-            },
+        Ok(SwapAndAccountMetas {
+            swap: Swap::Invariant { x_to_y },
             account_metas,
         })
     }

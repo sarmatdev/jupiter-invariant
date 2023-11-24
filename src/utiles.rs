@@ -7,6 +7,7 @@ use invariant_types::{
     structs::{TICKMAP_SIZE, TICK_CROSSES_PER_IX, TICK_LIMIT},
     ANCHOR_DISCRIMINATOR_SIZE, MAX_SQRT_PRICE, TICK_SEED,
 };
+use jupiter_core::amm::PartialAccount;
 use rust_decimal::prelude::FromPrimitive;
 use solana_client::rpc_client::RpcClient;
 
@@ -31,14 +32,19 @@ impl JupiterInvariant {
     pub fn fetch_accounts(
         rpc: &RpcClient,
         accounts_to_update: Vec<Pubkey>,
-    ) -> HashMap<Pubkey, Vec<u8>> {
+    ) -> HashMap<Pubkey, PartialAccount> {
         rpc.get_multiple_accounts(&accounts_to_update)
             .unwrap()
             .iter()
             .enumerate()
             .fold(HashMap::new(), |mut m, (index, account)| {
                 if let Some(account) = account {
-                    m.insert(accounts_to_update[index], account.data.clone());
+                    let partial_acount = PartialAccount {
+                        lamports: account.lamports,
+                        data: account.data.clone(),
+                        owner: account.owner,
+                    };
+                    m.insert(accounts_to_update[index], partial_acount);
                 }
                 m
             })

@@ -5,7 +5,6 @@ mod tests {
     use anchor_lang::prelude::Pubkey;
     use invariant_types::utils::get_pool_address;
     use jupiter_core::amm::{Amm, KeyedAccount, QuoteParams, SwapParams};
-    use rust_decimal::prelude::ToPrimitive;
     use solana_client::rpc_client::RpcClient;
     use solana_sdk::pubkey;
 
@@ -84,10 +83,6 @@ mod tests {
             result.fee_amount as f64 / 10u64.pow(input_mint.2) as f64,
             input_mint.1
         );
-        println!(
-            "price impact: {:.6} %",
-            result.price_impact_pct.to_f64().unwrap() * 100.0
-        );
 
         match jupiter_invariant.get_swap_leg_and_account_metas(&SwapParams {
             source_mint: quote.input_mint,
@@ -96,7 +91,10 @@ mod tests {
             user_source_token_account: Pubkey::new_unique(),
             user_transfer_authority: Pubkey::new_unique(),
             open_order_address: None,
-            quote_mint_to_referrer: Some(HashMap::from([(quote.input_mint, Pubkey::new_unique())])),
+            quote_mint_to_referrer: Some(&HashMap::from([(
+                quote.input_mint,
+                Pubkey::new_unique(),
+            )])),
             in_amount: quote.in_amount,
         }) {
             Ok(_) => {
@@ -178,10 +176,6 @@ mod tests {
             result.fee_amount as f64 / 10u64.pow(6) as f64,
             input_mint.1
         );
-        println!(
-            "price impact: {:.6} %",
-            result.price_impact_pct.to_f64().unwrap() * 100.0
-        );
 
         match jupiter_invariant.get_swap_leg_and_account_metas(&SwapParams {
             source_mint: quote.input_mint,
@@ -190,7 +184,10 @@ mod tests {
             user_source_token_account: Pubkey::new_unique(),
             user_transfer_authority: Pubkey::new_unique(),
             open_order_address: None,
-            quote_mint_to_referrer: Some(HashMap::from([(quote.input_mint, Pubkey::new_unique())])),
+            quote_mint_to_referrer: Some(&HashMap::from([(
+                quote.input_mint,
+                Pubkey::new_unique(),
+            )])),
             in_amount: quote.in_amount,
         }) {
             Ok(_) => {
@@ -271,10 +268,6 @@ mod tests {
             "fee amount: {:.6} {}",
             result.fee_amount as f64 / 10u64.pow(6) as f64,
             input_mint.1
-        );
-        println!(
-            "price impact: {:.6} %",
-            result.price_impact_pct.to_f64().unwrap() * 100.0
         );
     }
 

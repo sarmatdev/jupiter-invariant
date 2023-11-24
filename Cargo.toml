@@ -13,9 +13,9 @@ solana-sdk = "1.14.11"
 solana-client = "1.14.11"
 anyhow = "1.0"
 spl-token = { version = "3.3.0", features = ["no-entrypoint"] }
-jupiter-core = { git = "https://github.com/jup-ag/rust-amm-implementation.git", branch = "main" }
-jupiter = { git = "https://github.com/jup-ag/rust-amm-implementation.git", branch = "main" }
+jupiter-core = { git = "https://github.com/jup-ag/rust-amm-implementation.git", rev = "1d02a43" }
+jupiter = { git = "https://github.com/jup-ag/rust-amm-implementation.git", rev = "1d02a43" }
 invariant-types = { git = "https://github.com/invariant-labs/protocol.git", branch = "master" }
 anchor-lang = "0.26.0"
-borsh = {version = "*", features = ["const-generics"]}
+borsh = { version = "*", features = ["const-generics"] }
 rust_decimal = "1.30.0"
