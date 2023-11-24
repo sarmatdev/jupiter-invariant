@@ -1984,7 +1984,7 @@ dependencies = [
 [[package]]
 name = "jupiter"
 version = "0.1.0"
-source = "git+https://github.com/sarmatdev/rust-amm-implementation.git?rev=1d02a43#1d02a43fd0938adc2415b09162f46e2dceb3d59f"
+source = "git+https://github.com/sarmatdev/rust-amm-implementation.git?rev=10136a5#10136a5cf94920bdec7ae2147b64b1781cceadb4"
 dependencies = [
  "anchor-gen",
  "anchor-lang",
@@ -1993,7 +1993,7 @@ dependencies = [
 [[package]]
 name = "jupiter-core"
 version = "0.1.0"
-source = "git+https://github.com/sarmatdev/rust-amm-implementation.git?rev=1d02a43#1d02a43fd0938adc2415b09162f46e2dceb3d59f"
+source = "git+https://github.com/sarmatdev/rust-amm-implementation.git?rev=10136a5#10136a5cf94920bdec7ae2147b64b1781cceadb4"
 dependencies = [
  "anchor-lang",
  "anyhow",
