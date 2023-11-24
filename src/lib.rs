@@ -48,10 +48,7 @@ impl Amm for JupiterInvariant {
         self.program_id
     }
 
-    fn from_keyed_account(keyed_account: &KeyedAccount) -> Result<Self>
-    where
-        Self: Sized,
-    {
+    fn from_keyed_account(keyed_account: &KeyedAccount) -> Result<Self> {
         JupiterInvariant::new_from_keyed_account(keyed_account)
     }
 

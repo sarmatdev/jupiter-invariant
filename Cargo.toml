@@ -11,8 +11,8 @@ anchor-lang = "0.26.0"
 anyhow = "1.0"
 borsh = "0.9.3"
 invariant-types = { git = "https://github.com/invariant-labs/protocol.git", branch = "master" }
-jupiter = { git = "https://github.com/jup-ag/rust-amm-implementation.git", rev = "1d02a43" }
-jupiter-core = { git = "https://github.com/jup-ag/rust-amm-implementation.git", rev = "1d02a43" }
+jupiter = { git = "https://github.com/sarmatdev/rust-amm-implementation.git", rev = "1d02a43" }
+jupiter-core = { git = "https://github.com/sarmatdev/rust-amm-implementation.git", rev = "1d02a43" }
 rust_decimal = "1.30.0"
 solana-client = "1.14.11"
 solana-sdk = "1.14.11"
